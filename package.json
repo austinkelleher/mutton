@@ -14,7 +14,7 @@
   "scripts": {
     "compile": "tsc -d -p tsconfig.dist.json",
     "prebuild": "rm -rf ./dist",
-    "build": "yarn compile && cp -R package.json yarn.lock ./dist/src/",
+    "build": "yarn compile && cp -R package.json yarn.lock README.md ./dist/src/",
     "autobuild": "yarn build && (cd ./dist/src && yarn install --production && yarn link) && yarn nodemon --exec 'yarn compile' --watch ./src -e ts",
     "lint": "tslint --project tsconfig.json --format codeFrame",
     "format-code": "prettier --write '**/*.[jt]s'",
