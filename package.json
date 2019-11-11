@@ -1,0 +1,37 @@
+{
+  "name": "mutton",
+  "version": "0.1.0",
+  "description": "A package for compiling and rendering simple mustache-like templates",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "author": "Austin Kelleher, a@alk.im",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "compile": "tsc -d -p tsconfig.dist.json",
+    "prebuild": "rm -rf ./dist",
+    "build": "yarn compile && cp -R package.json yarn.lock ./dist/src/",
+    "autobuild": "yarn build && (cd ./dist/src && yarn install --production && yarn link) && yarn nodemon --exec 'yarn compile' --watch ./src -e ts",
+    "lint": "tslint --project tsconfig.json --format codeFrame",
+    "format-code": "prettier --write '**/*.[jt]s'",
+    "test": "yarn jest ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/node": "~10",
+    "husky": "^3.0.5",
+    "jest": "^24.9.0",
+    "lint-staged": "8.2.1",
+    "nodemon": "^1.19.4",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.6.3"
+  }
+}
