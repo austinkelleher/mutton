@@ -451,4 +451,280 @@ mochi
       ],
     },
   },
+  {
+    desc:
+      'should treat single quotes wrapped around an expression as a literal and an expression',
+    template: `'{{hopper}}'`,
+    expressionCalls: ['hopper'],
+    renderResult: `'hopper'`,
+    compiled: {
+      nodes: [
+        getLiteralNode({
+          literal: `'`,
+          start: 0,
+          end: 0,
+        }),
+        getExpressioNode({
+          expression: 'hopper',
+          start: 1,
+          end: 10,
+        }),
+        getLiteralNode({
+          literal: `'`,
+          start: 11,
+          end: 11,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should treat double quotes wrapped around an expression as a literal and an expression',
+    template: `"{{hopper}}"`,
+    expressionCalls: ['hopper'],
+    renderResult: '"hopper"',
+    compiled: {
+      nodes: [
+        getLiteralNode({
+          literal: '"',
+          start: 0,
+          end: 0,
+        }),
+        getExpressioNode({
+          expression: 'hopper',
+          start: 1,
+          end: 10,
+        }),
+        getLiteralNode({
+          literal: '"',
+          start: 11,
+          end: 11,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should treat single quotes wrapped around expression inside of expression part of the existing expression',
+    template: `{{hopper'{{hopper}}'}}`,
+    expressionCalls: [`hopper'{{hopper}}'`],
+    renderResult: `hopper'{{hopper}}'`,
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: `hopper'{{hopper}}'`,
+          start: 0,
+          end: 21,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should treat double quotes wrapped around expression inside of expression part of the existing expression',
+    template: `{{hopper"{{hopper}}"}}`,
+    expressionCalls: [`hopper"{{hopper}}"`],
+    renderResult: `hopper"{{hopper}}"`,
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: `hopper"{{hopper}}"`,
+          start: 0,
+          end: 21,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should consider entire template as a literal if no end single quote inside of single expression',
+    template: `{{hopper'{{hopper}}}}`,
+    expressionCalls: [],
+    renderResult: "{{hopper'{{hopper}}}}",
+    compiled: {
+      nodes: [
+        getLiteralNode({
+          literal: "{{hopper'{{hopper}}}}",
+          start: 0,
+          end: 20,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should consider entire template as a literal if no end double quote inside of single expression',
+    template: '{{hopper"{{hopper}}}}',
+    expressionCalls: [],
+    renderResult: '{{hopper"{{hopper}}}}',
+    compiled: {
+      nodes: [
+        getLiteralNode({
+          literal: '{{hopper"{{hopper}}}}',
+          start: 0,
+          end: 20,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should support additional parts of expression after single quotes inside of expression',
+    template: "{{hopper '{{hopper}}' hopper}}",
+    expressionCalls: ["hopper '{{hopper}}' hopper"],
+    renderResult: "hopper '{{hopper}}' hopper",
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: "hopper '{{hopper}}' hopper",
+          start: 0,
+          end: 29,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should support additional parts of expression after double quotes inside of expression',
+    template: `{{hopper "{{hopper}}" hopper}}`,
+    expressionCalls: [`hopper "{{hopper}}" hopper`],
+    renderResult: `hopper "{{hopper}}" hopper`,
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: `hopper "{{hopper}}" hopper`,
+          start: 0,
+          end: 29,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should support entering single quotes without braces inside at start of expression',
+    template: `{{'hopper'}}`,
+    expressionCalls: [`'hopper'`],
+    renderResult: `'hopper'`,
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: `'hopper'`,
+          start: 0,
+          end: 11,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should support entering double quotes without braces inside at start of expression',
+    template: `{{"hopper"}}`,
+    expressionCalls: [`"hopper"`],
+    renderResult: `"hopper"`,
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: `"hopper"`,
+          start: 0,
+          end: 11,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should support entering single quotes with braces inside at start of expression',
+    template: `{{'{{hopper}}'}}`,
+    expressionCalls: [`'{{hopper}}'`],
+    renderResult: `'{{hopper}}'`,
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: `'{{hopper}}'`,
+          start: 0,
+          end: 15,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should support entering double quotes with braces inside at start of expression',
+    template: `{{"{{hopper}}"}}`,
+    expressionCalls: [`"{{hopper}}"`],
+    renderResult: `"{{hopper}}"`,
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: `"{{hopper}}"`,
+          start: 0,
+          end: 15,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should compile only literal node if braces start, then single quote, and no end braces',
+    template: "{{'hello",
+    expressionCalls: [],
+    renderResult: "{{'hello",
+    compiled: {
+      nodes: [
+        getLiteralNode({
+          literal: "{{'hello",
+          start: 0,
+          end: 7,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should compile only literal node if braces start, then double quote, and no end braces',
+    template: '{{"hello',
+    expressionCalls: [],
+    renderResult: '{{"hello',
+    compiled: {
+      nodes: [
+        getLiteralNode({
+          literal: '{{"hello',
+          start: 0,
+          end: 7,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should compile only literal node if braces start, then single quotes, and no end braces',
+    template: "{{'hello'",
+    expressionCalls: [],
+    renderResult: "{{'hello'",
+    compiled: {
+      nodes: [
+        getLiteralNode({
+          literal: "{{'hello'",
+          start: 0,
+          end: 8,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should compile only literal node if braces start, then double quotes, and no end braces',
+    template: '{{"hello"',
+    expressionCalls: [],
+    renderResult: '{{"hello"',
+    compiled: {
+      nodes: [
+        getLiteralNode({
+          literal: '{{"hello"',
+          start: 0,
+          end: 8,
+        }),
+      ],
+    },
+  },
 ];
