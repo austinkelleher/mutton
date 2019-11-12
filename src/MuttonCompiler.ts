@@ -7,6 +7,8 @@ import {
 
 const TEMPLATE_START_CHAR = '{';
 const TEMPLATE_END_CHAR = '}';
+const SINGLE_QUOTE_CHAR = "'";
+const DOUBLE_QUOTE_CHAR = '"';
 
 /**
  * The length of the start/end pattern of a template variable: `{{`
@@ -41,6 +43,10 @@ class MuttonCompilerWithinVariableState extends MuttonCompilerState {
       this.compiler.skip(1);
       this.compiler.addExpressionNode();
       this.compiler.changeToDefaultState();
+    } else if (char === SINGLE_QUOTE_CHAR) {
+      this.compiler.changeToWithinSingleQuoteState();
+    } else if (char === DOUBLE_QUOTE_CHAR) {
+      this.compiler.changeToWithinDoubleQuoteState();
     }
   }
 }
@@ -86,6 +92,32 @@ class MuttonCompilerDefaultState extends MuttonCompilerState {
   }
 }
 
+/**
+ * This state is entered when after seeing single quote inside of an expression
+ *
+ * Example: `{{firstName + '{{lastName}}'}}`
+ */
+class MuttonCompilerWithinSingleQuoteState extends MuttonCompilerState {
+  onChar(char: string) {
+    if (char === SINGLE_QUOTE_CHAR) {
+      this.compiler.changeToWithinVariableState();
+    }
+  }
+}
+
+/**
+ * This state is entered when after seeing double quote inside of an expression
+ *
+ * Example: `{{firstName + "{{lastName}}"}}`
+ */
+class MuttonCompilerWithinDoubleQuoteState extends MuttonCompilerState {
+  onChar(char: string) {
+    if (char === DOUBLE_QUOTE_CHAR) {
+      this.compiler.changeToWithinVariableState();
+    }
+  }
+}
+
 export default class MuttonCompiler {
   private compiled: MuttonCompiledTemplate;
   private previousNodeEnd = -1;
@@ -94,12 +126,20 @@ export default class MuttonCompiler {
   private state: MuttonCompilerState;
 
   private withinVariableState: MuttonCompilerWithinVariableState;
+  private withinSingleQuoteState: MuttonCompilerWithinSingleQuoteState;
+  private withinDoubleQuoteState: MuttonCompilerWithinDoubleQuoteState;
   private defaultState: MuttonCompilerDefaultState;
 
   constructor(template: string) {
     this.template = template;
 
     this.withinVariableState = new MuttonCompilerWithinVariableState(this);
+    this.withinSingleQuoteState = new MuttonCompilerWithinSingleQuoteState(
+      this
+    );
+    this.withinDoubleQuoteState = new MuttonCompilerWithinDoubleQuoteState(
+      this
+    );
     this.state = this.defaultState = new MuttonCompilerDefaultState(this);
 
     this.compiled = {
@@ -174,7 +214,7 @@ export default class MuttonCompiler {
     }
 
     // We reached the end of the string before exiting the `WithinVariableState`
-    if (this.state instanceof MuttonCompilerWithinVariableState) {
+    if (!(this.state instanceof MuttonCompilerDefaultState)) {
       const previousCompiledNodeIndex = this.compiled.nodes.length - 1;
       const previousCompiledNode = this.compiled.nodes[
         previousCompiledNodeIndex
@@ -205,6 +245,14 @@ export default class MuttonCompiler {
 
   changeToWithinVariableState() {
     this.state = this.withinVariableState;
+  }
+
+  changeToWithinSingleQuoteState() {
+    this.state = this.withinSingleQuoteState;
+  }
+
+  changeToWithinDoubleQuoteState() {
+    this.state = this.withinDoubleQuoteState;
   }
 
   skip(count: number) {
