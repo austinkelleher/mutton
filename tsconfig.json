@@ -3,10 +3,8 @@
     "rootDir": ".",
     "baseUrl": ".",
     "outDir": "./dist",
-    "module": "commonjs",
     "noUnusedLocals": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
@@ -14,10 +12,14 @@
     "strictFunctionTypes": true,
     "allowJs": false,
     "moduleResolution": "node",
-    "target": "es2017",
-    "lib": ["es2015", "es2016", "es2017", "esnext.asynciterable"],
+    "module": "commonjs",
+    "target": "ESNext",
     "pretty": true,
-    "inlineSourceMap": true,
-    "inlineSources": true
-  }
+    "inlineSourceMap": false,
+    "inlineSources": false,
+    "paths": {
+      "~/*": ["./*"]
+    }
+  },
+  "include": ["src/**/*"]
 }

@@ -3,9 +3,10 @@
   "rules": {
     "interface-name": false,
     "object-literal-sort-keys": false,
-    "no-var-requires": false,
+    "no-var-requires": true,
     "ordered-imports": false,
-    "no-unused-variable": false,
-    "no-implicit-dependencies": [true, "dev", ["~"]]
+    "no-unused-variable": true,
+    "quotemark": [true, "single", "avoid-escape"],
+    "no-require-imports": true
   }
 }

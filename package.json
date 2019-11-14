@@ -2,23 +2,30 @@
   "name": "mutton",
   "version": "0.3.0",
   "description": "A package for compiling and rendering simple mustache-like templates",
-  "main": "dist/index.js",
-  "files": [
-    "dist"
-  ],
+  "main": "./dist/src/",
+  "module": "./dist/es6/src/",
+  "jsnext:main": "./dist/esnext/src/",
+  "types": "./dist/src/index.d.ts",
   "author": "Austin Kelleher, a@alk.im",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
+  "engines": {
+    "node": ">= 8.0.0"
+  },
   "scripts": {
-    "compile": "tsc -d -p tsconfig.dist.json",
-    "prebuild": "rm -rf ./dist",
-    "build": "yarn compile && cp -R package.json yarn.lock README.md ./dist/src/",
-    "autobuild": "yarn build && (cd ./dist/src && yarn install --production && yarn link) && yarn nodemon --exec 'yarn compile' --watch ./src -e ts",
-    "lint": "tslint --project tsconfig.json --format codeFrame",
-    "format-code": "prettier --write '**/*.[jt]s'",
-    "test": "yarn jest ."
+    "compile-src-cjs": "tsc --declaration --declarationDir ./dist -p tsconfig-src-cjs.json",
+    "compile-src-es6": "tsc -p tsconfig-src-es6.json",
+    "compile-src-esnext": "tsc -p tsconfig-src-esnext.json",
+    "precompile-src": "rm -rf ./dist",
+    "compile-src": "yarn compile-src-cjs && yarn compile-src-es6 && yarn compile-src-esnext",
+    "lint": "tslint --format codeFrame --project tsconfig.json 'src/**/*.ts' 'test/**/*.ts'",
+    "pretest": "yarn lint",
+    "test": "jest",
+    "prebuild": "yarn test",
+    "build": "yarn compile-src",
+    "format-code": "prettier --write '**/*.[jt]s'"
   },
   "dependencies": {},
   "devDependencies": {
