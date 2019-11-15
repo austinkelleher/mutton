@@ -1,6 +1,6 @@
 {
   "name": "mutton",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A package for compiling and rendering simple mustache-like templates",
   "main": "./dist/src/",
   "module": "./dist/es6/src/",
