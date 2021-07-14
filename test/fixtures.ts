@@ -52,10 +52,38 @@ export function runFixtureTests(
 
 export const fixtures: EvaluatorTestFixture[] = [
   {
+    desc: 'should return empty string with no template',
+    template: '',
+    expressionCalls: [],
+    renderResult: '',
+    compiled: {
+      nodes: [],
+    },
+  },
+  {
     desc: 'should render basic template with single variable',
     template: '{{hopper}}',
     expressionCalls: ['hopper'],
     renderResult: 'hopper',
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: 'hopper',
+          start: 0,
+          end: 9,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should return list of values when expression call returns list with single variable',
+    template: '{{hopper}}',
+    expressionCalls: ['hopper'],
+    renderResult: ['hopper1', 'hopper2'],
+    expressionEvaluator(expression: string) {
+      return ['hopper1', 'hopper2'];
+    },
     compiled: {
       nodes: [
         getExpressioNode({
@@ -174,6 +202,105 @@ export const fixtures: EvaluatorTestFixture[] = [
           literal: ' Test',
           start: 32,
           end: 36,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should return list of values of combined expression and literal values provided multiple expressions returning lists',
+    template: '{{hopper}} {{mochi}}',
+    expressionCalls: ['hopper', 'mochi'],
+    renderResult: ['hopper1 mochi1', 'hopper2 mochi2'],
+    expressionEvaluator(expression: string) {
+      if (expression === 'hopper') {
+        return ['hopper1', 'hopper2'];
+      } else if (expression === 'mochi') {
+        return ['mochi1', 'mochi2'];
+      }
+    },
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: 'hopper',
+          start: 0,
+          end: 9,
+        }),
+        getLiteralNode({
+          literal: ' ',
+          start: 10,
+          end: 10,
+        }),
+        getExpressioNode({
+          expression: 'mochi',
+          start: 11,
+          end: 19,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should return list of values of combined expression and literal values provided multiple expressions',
+    template: '{{hopper}} {{mochi}}',
+    expressionCalls: ['hopper', 'mochi'],
+    renderResult: ['hopper1 mochi', 'hopper2 mochi'],
+    expressionEvaluator(expression: string) {
+      if (expression === 'hopper') {
+        return ['hopper1', 'hopper2'];
+      } else if (expression === 'mochi') {
+        return 'mochi';
+      }
+    },
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: 'hopper',
+          start: 0,
+          end: 9,
+        }),
+        getLiteralNode({
+          literal: ' ',
+          start: 10,
+          end: 10,
+        }),
+        getExpressioNode({
+          expression: 'mochi',
+          start: 11,
+          end: 19,
+        }),
+      ],
+    },
+  },
+  {
+    desc:
+      'should return list of values of combined expression and literal values provided multiple expressions returning lists with different lengths',
+    template: '{{hopper}} {{mochi}}',
+    expressionCalls: ['hopper', 'mochi'],
+    renderResult: ['hopper1 mochi1', 'hopper2 mochi2', 'hopper3 '],
+    expressionEvaluator(expression: string) {
+      if (expression === 'hopper') {
+        return ['hopper1', 'hopper2', 'hopper3'];
+      } else if (expression === 'mochi') {
+        return ['mochi1', 'mochi2'];
+      }
+    },
+    compiled: {
+      nodes: [
+        getExpressioNode({
+          expression: 'hopper',
+          start: 0,
+          end: 9,
+        }),
+        getLiteralNode({
+          literal: ' ',
+          start: 10,
+          end: 10,
+        }),
+        getExpressioNode({
+          expression: 'mochi',
+          start: 11,
+          end: 19,
         }),
       ],
     },
