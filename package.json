@@ -16,7 +16,7 @@
     "access": "public"
   },
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 14.0.0"
   },
   "scripts": {
     "compile-src-cjs": "tsc --declaration --declarationDir ./dist -p tsconfig-src-cjs.json",
@@ -31,7 +31,6 @@
     "build": "yarn compile-src",
     "format-code": "prettier --write '**/*.[jt]s'"
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "@types/node": "~10",
@@ -43,6 +42,6 @@
     "ts-jest": "^24.0.2",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.6.3"
+    "typescript": "^4.9.5"
   }
 }

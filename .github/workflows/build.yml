@@ -7,24 +7,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [14.x, 16.x, 18.x]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
+      - name: Check out code repository source code
+        uses: actions/checkout@v3
+
       - id: setup-node
         name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Check out code repository source code
-        uses: actions/checkout@v2
+          cache: npm
 
       - name: Install dependencies
-        run: yarn
+        run: npm install 
 
       - name: Run build
-        run: yarn build
+        run: npm run build
 
   # Publishing is done in a separate job to allow
   # for all matrix builds to complete.
@@ -35,18 +36,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [12]
+        node: [18]
 
     steps:
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
-
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: npm
 
       # Fetch tags and describe the commit before the merge commit
       # to see if it's a version publish
@@ -60,11 +62,12 @@ jobs:
           else
             echo "Version commit tag not found. Not publishing."
           fi
+
       - name: Publish
         if: env.publish == 'true'
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
-          yarn
+          npm install
           npm publish
